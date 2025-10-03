@@ -1,83 +1,99 @@
-# Hextra Starter Template
+# Hugo + Hextra Site
 
-[![Deploy Hugo site to Pages](https://github.com/imfing/hextra-starter-template/actions/workflows/pages.yaml/badge.svg)](https://github.com/imfing/hextra-starter-template/actions/workflows/pages.yaml)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/6e83fd88-5ffe-4808-9689-c0f3b100bfe3/deploy-status)](https://app.netlify.com/sites/hextra-starter-template/deploys)
-![Vercel Deployment Status](https://img.shields.io/github/deployments/imfing/hextra-starter-template/production?logo=vercel&logoColor=white&label=vercel&labelColor=black&link=https%3A%2F%2Fhextra-starter-template.vercel.app%2F)
+This site is built with [Hugo](https://gohugo.io) and uses the [Hextra](https://github.com/imfing/hextra) starter via **Hugo Modules**.  
+By default, you won’t see theme files like `layouts/` or `assets/` in this repo, because Hugo pulls them in as a module during the build.
 
+## Updating the theme
 
-🐣 Minimal template for getting started with [Hextra](https://github.com/imfing/hextra)
+To update Hextra to the latest release:
 
-![hextra-template](https://github.com/imfing/hextra-starter-template/assets/5097752/c403b9a9-a76c-47a6-8466-513d772ef0b7)
-
-[🌐 Demo ↗](https://imfing.github.io/hextra-starter-template/)
-
-## Quick Start
-
-Use this template to create your own repository:
-
-<img src="https://docs.github.com/assets/cb-77734/mw-1440/images/help/repository/use-this-template-button.webp" width=400 />
-
-You can also quickly start developing using the following online development environment:
-
-- [GitHub Codespaces](https://github.com/codespaces) 
-    
-    [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/imfing/hextra-starter-template)
-
-    Create a new codespace and follow the [Local Development](#local-development) to launch the preview
-
-- [Gitpod](https://gitpod.io)
-
-    [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/imfing/hextra-starter-template)
-
-
-## Deployment
-
-### GitHub Pages
-
-A GitHub Actions workflow is provided in [`.github/workflows/pages.yaml`](./.github/workflows/pages.yaml) to [publish to GitHub Pages](https://github.blog/changelog/2022-07-27-github-pages-custom-github-actions-workflows-beta/) for free. 
-
-For details, see [Publishing with a custom GitHub Actions workflow](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-with-a-custom-github-actions-workflow).
-
-Note: in the settings, make sure to set the Pages deployment source to **GitHub Actions**:
-
-<img src="https://github.com/imfing/hextra-starter-template/assets/5097752/99676430-884e-42ab-b901-f6534a0d6eee" width=600 />
-
-[Run the workflow manually](https://docs.github.com/en/actions/using-workflows/manually-running-a-workflow) if it's not triggered automatically.
-
-### Netlify
-
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/imfing/hextra-starter-template)
-
-### Vercel
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fimfing%2Fhextra-starter-template&env=HUGO_VERSION)
-
-Override the configuration:
-
-<img src="https://github.com/imfing/hextra-starter-template/assets/5097752/e2e3cecd-c884-47ec-b064-14f896fee08d" width=600 />
-
-## Local Development
-
-Pre-requisites: [Hugo](https://gohugo.io/getting-started/installing/), [Go](https://golang.org/doc/install) and [Git](https://git-scm.com)
-
-```shell
-# Clone the repo
-git clone https://github.com/imfing/hextra-starter-template.git
-
-# Change directory
-cd hextra-starter-template
-
-# Start the server
-hugo mod tidy
-hugo server --logLevel debug --disableFastRender -p 1313
-```
-
-### Update theme
-
-```shell
-hugo mod get -u
+```bash
+hugo mod get -u github.com/imfing/hextra@latest
 hugo mod tidy
 ```
 
-See [Update modules](https://gohugo.io/hugo-modules/use-modules/#update-modules) for more details.
+This updates `go.mod` / `go.sum`.  
+If you want a specific release:
 
+```bash
+hugo mod get github.com/imfing/hextra@vX.Y.Z
+```
+
+Check which version is active with:
+
+```bash
+hugo mod graph
+```
+
+## Using vendoring to inspect theme files
+
+Sometimes you need to see the theme’s source (templates, partials, assets) so you know what you’re overriding. For that, you can **vendor** modules:
+
+```bash
+hugo mod vendor
+```
+
+This writes the resolved modules into the `_vendor/` directory, e.g.:
+
+```
+_vendor/github.com/imfing/hextra@vX.Y.Z/layouts/
+_vendor/github.com/imfing/hextra@vX.Y.Z/assets/
+```
+
+### Workflow
+
+1. Run `hugo mod vendor`.
+2. Browse `_vendor/…` to find the file you want to customize.
+3. Copy that file into your project, **mirroring the path** under `layouts/`, `assets/`, etc.
+4. Edit only your local copy. Hugo will prefer your file over the module.
+5. (Optional) Remove `_vendor/` once you’re done browsing:
+
+   ```bash
+   rm -rf _vendor/
+   ```
+
+### Notes
+
+- If `_vendor/` is present, Hugo will build from the vendored snapshot first.  
+- If you vendor multiple versions of the same module, Hugo still picks **one** (per Go’s [Minimal Version Selection](https://go.dev/ref/mod)). The extra copies are ignored.  
+- Use `hugo mod graph` to confirm which version is actually active.
+
+## Overriding files
+
+Hugo’s lookup order means **local files take priority** over module files. Typical overrides:
+
+- **Layouts:** `layouts/_default/baseof.html`, `layouts/partials/head.html`
+- **Assets:** `assets/css/custom.scss`, `assets/js/custom.js`
+- **Static:** `static/favicon.ico`, `static/icons/…`
+
+Keep overrides minimal and mirror the module’s path exactly.
+
+## Tips
+
+- Clear Hugo’s resource cache if overrides don’t show:
+
+  ```bash
+  rm -rf resources/ && hugo server
+  ```
+
+- See mounts:
+
+  ```bash
+  hugo config mounts
+  ```
+
+- If you just want to inspect without vendoring, you can browse the Go module cache:
+
+  ```bash
+  go env GOMODCACHE
+  ls -la $GOMODCACHE/github.com/imfing/hextra@vX.Y.Z/
+  ```
+
+---
+
+## TL;DR
+
+- Update Hextra: `hugo mod get -u github.com/imfing/hextra@latest`  
+- Inspect files: `hugo mod vendor` → look in `_vendor/`  
+- Override: copy into local `layouts/`, `assets/`, or `static/`  
+- Don’t leave `_vendor/` checked in unless you want to lock builds to that snapshot
