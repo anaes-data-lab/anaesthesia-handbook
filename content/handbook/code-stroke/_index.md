@@ -1,6 +1,7 @@
 ---
 title: Code Stroke
 weight: 1
+next: decision-making
 ---
 
 RCH offers Endovascular Clot Retrieval (ECR) for patients with thromboembolic stroke that present within a six hours from symptom onset and have a clot that is suitable for retrieval. This life changing (and potentially life-saving) treatment has a significant impact on the anaesthesia service, especially when it occurs out-of-hours. 
