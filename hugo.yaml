@@ -45,6 +45,7 @@ params:
     displayLogo: true
     logo:
       path: images/logo.png
+      dark: images/logo-dark.png
       link: /
       width: 40
 
